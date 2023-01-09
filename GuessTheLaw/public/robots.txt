@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+Allow: /guess.html
+Sitemap: https://lawdle.web.app/sitemap.xml

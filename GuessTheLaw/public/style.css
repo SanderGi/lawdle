@@ -1,0 +1,339 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: droid sans mono, consolas, monospace;
+}
+
+html, body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100vw;
+}
+
+html {
+    overflow: visible;
+    height: 100vh;
+    height: 100dvh;
+}
+
+body {
+    background-color: rgb(171, 119, 51);
+    background-image: url('/images/background.webp');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+/* ios settings since it doesn't support fixed background attachment and other quirks :( */
+@supports (-webkit-touch-callout: none) {
+    html, body {
+        /* ios viewport bug fix */
+        min-height: -webkit-fill-available;
+    }
+
+    html {
+        /* ios viewport bug fix */
+        height: -webkit-fill-available;
+    }
+
+    body {
+        /* ios fixed background attachment bug workaround */
+        background-size: auto;
+        background-attachment: scroll;
+    }
+
+    main {
+        /* ios viewport bug fix */
+        min-height: -webkit-fill-available;
+    }
+
+    .fixed-ui {
+        /* ios viewport bug fix */
+        height: -webkit-fill-available;
+
+        /* ios fixed positioning bug fix */
+        position: absolute;
+    }
+}
+
+main {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-width: 850px;
+    background-color: rgba(255, 255, 255, .15);  
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    overflow: hidden;
+    overflow-y: visible;
+    padding: 10px;
+}
+
+.fixed-ui {
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    max-width: 850px;
+    position: fixed;
+    margin: auto;
+    top: 0; left: 0; right: 0;
+    pointer-events: none;
+}
+
+.fixed-ui > *{
+    pointer-events: all;
+}
+
+h1 {
+    font-size: 4rem;
+}
+
+h1 > img {
+    height: 1.2em;
+    translate: 28% 18%;
+    user-select: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+input {
+    display: block;
+    margin: 1em auto;
+    border: none;
+    padding: 0;
+    width: 30ch;
+    background: repeating-linear-gradient(90deg, rgb(48,48,48) 0, rgb(48,48,48) 1ch, transparent 0, transparent 1.5ch) 0 100%/ 29.5ch 2px no-repeat;
+    font: clamp(2ch, 3.8vw, 38px) droid sans mono, consolas, monospace;
+    letter-spacing: 0.5ch;
+    text-transform: uppercase;
+}
+input:focus {
+    outline: none;
+    color: dodgerblue;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: rgb(48,48,48) ;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: rgb(48,48,48) ;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: rgb(48,48,48) ;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.item1 {
+    flex-grow: 0; /* Don't allow the first item to grow */
+}
+
+.item2 {
+    flex-grow: 1; /* Allow the second item to take up the remaining space */
+    font-size: clamp(2ch, 3.8vw, 38px);
+    height: fit-content;
+    padding: 8px;
+    background-color: dodgerblue;
+    color: black;
+    border-radius: 5px;
+    border-color: navy;
+    border: 2px solid;
+    margin-bottom: 5px;
+}
+.item2:hover {
+    border-color: white;
+    background-color: #0099cc;
+    color: #ffffff;
+}
+  
+.item2:disabled,
+.item2[disabled]{
+    border-color: #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+.thought {
+    /* display:flex; */
+    --color:palegoldenrod;
+    background-color:var(--color);
+    padding:20px;
+    border-radius:30px;
+    min-width:40px;
+    max-width:100%;
+    min-height:40px;
+    margin:20px;
+    position:relative;
+    /* align-items:center;
+    justify-content:center; */
+    text-align:center;
+}
+.thought:before,
+.thought:after {
+    content:"";
+    background-color:var(--color);
+    border-radius:50%;
+    display:block;
+    position:absolute;
+    z-index:-1;
+}
+.thought:before {
+    width:44px;
+    height:44px;
+    top:-12px;
+    left:28px;
+    box-shadow:-50px 30px 0 -12px var(--color);
+}
+.thought:after {
+    bottom:-10px;
+    right:26px;
+    width:30px;
+    height:30px;
+    box-shadow:40px -34px 0 0 var(--color),
+                -28px -6px 0 -2px var(--color),
+                -24px 17px 0 -6px var(--color),
+                -5px 25px 0 -10px var(--color);
+}
+
+table {
+    width: 100%;
+    font-size: clamp(2ch, 3vw, 20px);
+    text-align: left;
+    border-collapse: collapse; 
+}
+
+th, td {
+    padding-bottom: 5px;
+}
+
+tr:nth-child(3) { /* second row/guess has border top */
+    border-top: 2px solid black 
+}
+
+table td:nth-child(2) { /* second column */
+    background: repeating-linear-gradient(90deg, rgb(48,48,48) 0, rgb(48,48,48) 1ch, transparent 0, transparent 1.5ch) 0 80%/ 29.5ch 2px no-repeat;
+    letter-spacing: 0.5ch;
+    text-transform: uppercase;
+    padding-top: 2px;
+}
+
+table td:nth-child(3), table th:nth-child(3) { /* third column */
+    width: 200px;
+}
+
+@media (max-width: 600px) {
+    table td:nth-child(3), table th:nth-child(3) { /* third column */
+        width: 6ch;
+    }
+}
+
+#stats {
+    background-color: plum;
+    padding: 8px;
+    border-style: groove;
+    border-color: blueviolet;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+#surrender {
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: tomato;
+    background-image: url('/images/surrender.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 50%;
+    border-color: red;
+    margin: clamp(2px, 2vw, 8px);
+}
+
+#surrender:hover {
+    box-shadow:
+        0 0 60px 30px rgb(233, 11, 11),
+        0 0 100px 60px rgb(255, 0, 123)
+}
+
+#mode {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    text-decoration: none;
+    text-align: center;
+}
+
+#next {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.round-btn {
+    margin: clamp(2px, 2vw, 8px);
+    width: 140px;
+    height: 32px;
+    border-top-left-radius: 15% 50%;
+    border-bottom-left-radius: 15% 50%;
+    border-top-right-radius: 15% 50%;
+    border-bottom-right-radius: 15% 50%;
+    border-color: navy;
+    border: 2px solid;
+    background-color: dodgerblue;
+    font-size: x-large;
+    color: black;
+}
+
+.round-btn:hover {
+    border-color: white;
+    background-color: #0099cc;
+    color: #ffffff;
+}
+
+#mcq-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.skip {
+    width:1px;
+    height:1px;
+    position: absolute;
+    top: -1000px; left: 0;
+}
+
+.skip:focus {
+    top: 0;
+    width: auto;
+    height: auto;
+}
+
+.selective-centering-wrapper {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: flex-start; 
+}
+
+.selectively-centered {
+    margin: auto 0;
+}

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawdle - Guess Where The Law Is From!</title>
+    <meta name="description" content="Lawdle is a word game inspired by Wordle. It adds elements of guessing locations and laughing at absurd laws">
+    <meta name="keywords" content="Stupid laws, lawdle, wordle, word game, geoguesser">
+    <meta name="author" content="SanderGi">
+    <link rel="icon" type="image/png" href="/images/icon.png">
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="alternate" hreflang="en" href="https://lawdle.web.app"/>
+    <link rel="alternate" hreflang="x-default" href="https://lawdle.web.app"/>
+
+    <link rel="canonical" href="https://lawdle.web.app"/>
+
+    <!-- Facebook, Twitter -->
+    <meta property="og:url"                content="https://lawdle.web.app"/>
+    <meta property="og:type"               content="website"/>
+    <meta property="og:title"              content="Lawdle"/>
+    <meta property="og:description"        content="Can you guess where the absurd law comes from?"/>
+    <meta property="og:image"              content="https://lawdle.web.app/images/icon.png"/>
+    <meta property="og:image:alt"          content="A blue gavel"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script> <!-- axios to get around mixed content when the secure endpoint is down -->
+</head>
+<body>
+    <main>
+        <a href="#main-content" class="skip">Skip to main content</a>
+        <a href="#navigation" class="skip">Skip to navigation</a>
+        <h1><img src="/images/iconhighres.png" alt="Blue Gavel Icon" width="76.797" height="76.797"> Lawdle</h1>
+        <br>
+        <section id="main-content">
+            <div class="thought" id="law" aria-label="The law to guess the location of.">Loading...</div>
+            <p id="stats" style="display: none;" aria-label="Summary of your scores on this browser"></p>
+            <div class="container">
+                <input id="locationInput" class="item1" maxlength='20' value='' placeholder="location" aria-label="Type a location name (country, state, city, etc.) to guess where the law originates. Up to 20 characters."/>
+                <button id="guessButton" class="item2" aria-label="Submit guessed location for evaluation">GUESS</button>
+            </div>
+            <table cellspacing="0" id="guesses" aria-live="polite" aria-label="A table of your past guesses and their evaluation (how close they were and which letters they got correct)"></table>
+        </section>
+    </main>
+    <nav class="fixed-ui" id="navigation">
+        <button id="surrender" aria-label="surrender"></button>
+        <a id="mode" class="round-btn" href="/guess.html" aria-label="Change game mode to practice">PRACTICE</a>
+        <a href="#main-content" class="skip">Skip back to main content</a>
+    </nav>
+
+    <script type="module">
+        import { sharerbox } from "/sharerbox/sharerbox.js"
+        import { calcDaysSince, getRealLaw, getDistance, getCoordinate, isLocation } from "/laws.js"
+
+        function createTableRow(val1='#', val2='Guess', val3='How far off?', isHeader=false) {
+            let row = document.createElement('tr');;
+            if (isHeader) {
+                row.innerHTML = `<th>${val1}</th><th>${val2}</th><th>${val3}</th>`;
+            } else {
+                row.innerHTML = `<td>${val1}</td><td>${val2}</td><td>${val3}</td>`;
+            }
+            return row;
+        }
+
+        function replaceAt(str, index, replacement) {
+            return str.substring(0, index) + replacement + str.substring(index + 1);
+        }
+
+        function removeNonAlpabetical(str) {
+            const re = /[^A-Z^a-z]/;
+            let ix = re.exec(str);
+            while (ix !== null) {
+                str = replaceAt(str, ix.index, "");
+                ix = re.exec(str);
+                console.log(ix);
+            }
+            return str;
+        }
+
+        window.addEventListener('load', async () => {
+            sharerbox({
+                socialNetworks: 'Twitter Facebook WhatsApp Reddit Tumblr Pinterest Telegram',
+                iconSize: 45,
+                behavior: 'new-tab',
+                position: 'right',
+                color: 'black',
+                visibility: false,
+                message: 'Can you guess the law? Some of them are pretty weird'
+            });
+
+            const dayCount = calcDaysSince();
+            const law = await getRealLaw(dayCount);
+            document.getElementById('law').textContent = law.law;
+            let c;
+            try {
+                c = await getCoordinate(law.location);
+            } catch {
+                c = {lat: NaN, lng: NaN};
+            }
+            const coordinate = c;
+            
+
+            function showStats(stats, didWin=false, customMessage=false) {
+                let html = customMessage || (didWin ? `
+                    You guessed it!
+                ` : `
+                    Better skill next time. 
+                `);
+                html += `
+                    This law is from ${law.location} (<a href=${law.source}>source</a>)*<br>
+                    <br>
+                    Total games played:	${stats.totalGames}<br>
+                    Wins: ${stats.wins}<br>
+                    Win streak:	${stats.winStreak}<br>
+                    Resignations: ${stats.resignations}<br>
+                    Total guesses across all games:	${stats.totalGuesses}<br>
+                    Average guesses across all games: ${(Math.round(stats.avgGuesses * 100) / 100).toFixed(2)}<br>
+                    <br>
+                    *Disclaimer: all our data is webscraped or generated by AIs. We do not make any guarantees regarding the accuracy of any content nor does said content reflect our oppinions or beliefs and we provide it as is with no liability for any offense caused.
+                `;
+                document.getElementById('stats').innerHTML = html;
+                document.getElementById('stats').style.display = "block";
+            }
+
+            function updateStats(didWin=false) {
+                let stats = JSON.parse(window.localStorage.getItem("lawdle-stats")) || {
+                    totalGames:	0,
+                    wins: 0,
+                    winStreak: 0,
+                    resignations: 0,
+                    totalGuesses: 0,
+                    avgGuesses: 0.0
+                };
+                stats.totalGames += 1;
+                stats.totalGuesses += guesses;
+                stats.avgGuesses = stats.totalGuesses / stats.totalGames;
+                if (didWin) {
+                    stats.wins += 1;
+                    stats.winStreak += 1;
+                } else {
+                    stats.resignations += 1;
+                    stats.winStreak = 0;
+                }
+                localStorage.setItem("lawdle-stats", JSON.stringify(stats));
+                return stats;
+            }
+
+            function endGame(didWin=false, shouldUpdateStats=true) {
+                document.getElementById('locationInput').style.display = "none";
+                document.getElementById('guessButton').style.display = "none";
+                document.getElementById('surrender').style.display = "none";
+                let stats; 
+                if (shouldUpdateStats) {
+                    stats = updateStats(didWin);
+                    showStats(stats, didWin);
+                    console.log("saving game: " + dayCount + " dayCount, " + didWin + " win status");
+                    localStorage.setItem("lawdle-status", JSON.stringify({dayCount: dayCount, didWin: didWin}));
+                } else {
+                    stats = JSON.parse(window.localStorage.getItem("lawdle-stats"));
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(0,0,0,0);
+                    const msToTomorrow = tomorrow.getTime() - (new Date()).getTime();
+                    const date = new Date(msToTomorrow);
+                    const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+                    const formatedTime = new Intl.DateTimeFormat(undefined, options).format(date);
+                    showStats(stats, didWin, `You've already played today's Lawdle (next one is available in ${formatedTime} hours).`);
+                }
+
+                sharerbox({
+                    socialNetworks: 'Twitter Facebook WhatsApp Reddit Tumblr Pinterest Telegram',
+                    iconSize: 45,
+                    behavior: 'new-tab',
+                    position: 'right',
+                    color: 'black',
+                    visibility: true,
+                    message: "Can you guess the law? I'm on a " + stats.winStreak + " game win streak right now!"
+                });
+            }
+
+            let guesses = 0;
+            async function makeGuess(location) {
+                location = removeNonAlpabetical(location).toLowerCase().trim();
+                let coord = {lat: 0, lng: 0};
+                try {
+                    if (location.length < 3 && location.length != law.location.length) {
+                        throw 'too short location';
+                    }
+                    coord = await getCoordinate(location);
+                } catch (err) {
+                    console.error(err);
+                    if (isLocation(location)) {
+                        coord = {lat: NaN, lng: NaN};
+                    } else {
+                        alert("That location is not valid. Check your spelling and try again.");
+                        return;
+                    }
+                }
+                if (guesses == 0) {
+                    document.getElementById('guesses').appendChild(createTableRow('#', 'Guess', 'How far off?', true));
+                }
+                let distance = new Intl.NumberFormat(undefined, { style: 'unit', unit: 'mile' }).format(getDistance(coordinate.lat, coordinate.lng, coord.lat, coord.lng));
+                if (distance.includes("-1")) {
+                    distance = "Not available";
+                }
+
+                const answerkey = removeNonAlpabetical(law.location).toLowerCase().trim();
+                let correct = answerkey;
+                let green = [];
+                for (var i = 0; i < location.length; i++) {
+                    const letter = location.charAt(i);
+                    if (correct.length - 1 < i) correct += '_';
+                    if (letter == correct.charAt(i)) {
+                        correct = replaceAt(correct, i, '_');
+                        green.push(true);
+                    } else {
+                        green.push(false);
+                    }
+                }
+                let highlighted = "";
+                for (var i = 0; i < location.length; i++) {
+                    const letter = location.charAt(i);
+                    if (correct.length - 1 < i) correct += '_';
+                    if (green[i]) {
+                        highlighted += `<mark style="background-color: rgb(0, 200, 0, 0.5)">${letter}</mark>`;
+                    } else if (correct.includes(letter)) {
+                        let ix = correct.indexOf(letter);
+                        correct = replaceAt(correct, ix, '_');
+                        highlighted += `<mark style="background-color: rgb(200, 200, 0, 0.5)">${letter}</mark>`;
+                    } else {
+                        highlighted += letter;
+                    }
+                }
+                
+                document.getElementById('guesses').insertBefore(createTableRow(guesses+1, highlighted, distance), document.getElementById('guesses').children[1]);
+                guesses++;
+                document.getElementById('locationInput').value = "";
+
+                // win condition
+                if (location == answerkey.substring(0, Math.min(20, answerkey.length))) {
+                    endGame(true);
+                }
+            }
+
+            window.addEventListener("keypress", async function(event) {
+                if (event.key === "Enter") {
+                    document.getElementById('guessButton').disabled = true;
+                    await makeGuess(document.getElementById('locationInput').value);
+                    document.getElementById('guessButton').disabled = false;
+                }
+            });
+            document.getElementById('guessButton').addEventListener('click', async function(event) {
+                document.getElementById('guessButton').disabled = true;
+                await makeGuess(document.getElementById('locationInput').value);
+                document.getElementById('guessButton').disabled = false;
+            });
+
+            document.getElementById('surrender').addEventListener('click', function(event) {
+                if (confirm("Are you sure you want to surrender the current game?")) {
+                    endGame(false);
+                }
+            });
+
+            const status = localStorage.getItem("lawdle-status");
+            if (status != null) {
+                const parsed = JSON.parse(status);
+                console.log("last game: " + parsed.dayCount + " dayCount, " + parsed.didWin + " win status");
+                if (parsed.dayCount === dayCount) {
+                    endGame(parsed.didWin, false);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
