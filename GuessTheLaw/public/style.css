@@ -26,6 +26,11 @@ body {
     background-attachment: fixed;
 }
 
+#map { 
+    height: min(30vh, 300px);
+    border-radius: 10px;
+}
+
 /* ios settings since it doesn't support fixed background attachment and other quirks :( */
 @supports (-webkit-touch-callout: none) {
     html, body {
