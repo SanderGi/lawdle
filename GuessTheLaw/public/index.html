@@ -51,7 +51,7 @@
 
     <script type="module">
         import { sharerbox } from "/sharerbox/sharerbox.js"
-        import { calcDaysSince, getRealLaw, getDistance, getCoordinate, isLocation } from "/laws.js"
+        import { calcDaysSince, getRealLaw, getDistance, getCoordinate, isLocation, removeNonAlpabetical, replaceAt } from "/laws.js"
 
         function createTableRow(val1='#', val2='Guess', val3='How far off?', isHeader=false) {
             let row = document.createElement('tr');;
@@ -61,21 +61,6 @@
                 row.innerHTML = `<td>${val1}</td><td>${val2}</td><td>${val3}</td>`;
             }
             return row;
-        }
-
-        function replaceAt(str, index, replacement) {
-            return str.substring(0, index) + replacement + str.substring(index + 1);
-        }
-
-        function removeNonAlpabetical(str) {
-            const re = /[^A-Z^a-z]/;
-            let ix = re.exec(str);
-            while (ix !== null) {
-                str = replaceAt(str, ix.index, "");
-                ix = re.exec(str);
-                console.log(ix);
-            }
-            return str;
         }
 
         window.addEventListener('load', async () => {
