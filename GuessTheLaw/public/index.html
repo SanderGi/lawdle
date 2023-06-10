@@ -93,13 +93,18 @@
             const dayCount = calcDaysSince();
             const law = await getRealLaw(dayCount);
             document.getElementById('law').textContent = law.law;
-            let c;
-            try {
-                c = await getCoordinate(law.location);
-            } catch {
-                c = {lat: NaN, lng: NaN};
+            let lawCord = null;
+            async function getLawCoordinate() {
+                if (lawCord !== null) return lawCord;
+                else {
+                    try {
+                        lawCord = await getCoordinate(law.location);
+                        return lawCord;
+                    } catch {
+                        return {lat: NaN, lng: NaN};
+                    }
+                }
             }
-            const coordinate = c;
             
 
             function showStats(stats, didWin=false, customMessage=false) {
@@ -201,6 +206,7 @@
                 if (guesses == 0) {
                     document.getElementById('guesses').appendChild(createTableRow('#', 'Guess', 'How far off?', true));
                 }
+                const coordinate = await getLawCoordinate();
                 let distance = new Intl.NumberFormat(undefined, { style: 'unit', unit: 'mile' }).format(getDistance(coordinate.lat, coordinate.lng, coord.lat, coord.lng));
                 if (distance.includes("-1")) {
                     distance = "Not available";
@@ -274,6 +280,14 @@
                 const parsed = JSON.parse(status);
                 console.log("last game: " + parsed.dayCount + " dayCount, " + parsed.didWin + " win status");
                 if (parsed.dayCount === dayCount) {
+                    const coord = await getLawCoordinate();
+                    if (coord.lat !== NaN && coord.lng !== NaN)
+                        map.flyTo([coord.lat, coord.lng], 8, {
+                            animate: true,
+                            duration: 1.5
+                        });
+                    else
+                        document.getElementById('map').style.display = 'none';
                     endGame(parsed.didWin, false);
                 }
             }
