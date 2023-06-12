@@ -22,11 +22,14 @@ export async function getCoordinate(locationName) {
         console.log(response);
         data = response.data;
     }
-    const latitude = data.geonames[0].lat;
-    const longitude = data.geonames[0].lng;
-    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-    window.localStorage.setItem("coord-" + locationName.toLowerCase(), JSON.stringify({lat: latitude, lng: longitude})); // save local cache
-    return {lat: latitude, lng: longitude};
+    if (data.geonames.length > 0) {
+        const latitude = data.geonames[0].lat;
+        const longitude = data.geonames[0].lng;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+        window.localStorage.setItem("coord-" + locationName.toLowerCase(), JSON.stringify({lat: latitude, lng: longitude})); // save local cache
+        return {lat: latitude, lng: longitude};
+    }
+    return {lat: NaN, lng: NaN};
 }
 
 /// uses the Haversine formula to calculate the distance between the two locations in miles

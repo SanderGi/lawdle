@@ -63,10 +63,18 @@
         import { calcDaysSince, getRealLaw, getDistance, getCoordinate, isLocation, removeNonAlpabetical, replaceAt } from "/laws.js"
 
         const map = L.map('map').setView([30, 0], 1);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+        try {
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+        } catch {
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+        }
 
 
         function createTableRow(val1='#', val2='Guess', val3='How far off?', isHeader=false) {
@@ -211,7 +219,7 @@
                 if (distance.includes("-1")) {
                     distance = "Not available";
                 }
-                if (coord.lat !== NaN && coord.lng !== NaN) {
+                if (coord.lat && coord.lng) {
                     map.flyTo([coord.lat, coord.lng], 8, {
                         animate: true,
                         duration: 1.5
