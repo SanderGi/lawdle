@@ -8,7 +8,7 @@
     <meta name="description" content="Lawdle is a word game inspired by Wordle. It adds elements of guessing locations and laughing at absurd laws">
     <meta name="keywords" content="Stupid laws, lawdle, wordle, word game, geoguesser">
     <meta name="author" content="SanderGi">
-    <link rel="icon" type="image/png" href="/images/icon.png">
+    <link rel="icon" type="image/png" href="images/icon.png">
 
     <link rel="stylesheet" href="style.css">
 
@@ -38,7 +38,7 @@
     <main>
         <a href="#main-content" class="skip">Skip to main content</a>
         <a href="#navigation" class="skip">Skip to navigation</a>
-        <h1><img src="/images/iconhighres.png" alt="Blue Gavel Icon" width="76.797" height="76.797"> Lawdle</h1>
+        <h1><img src="images/iconhighres.png" alt="Blue Gavel Icon" width="76.797" height="76.797"> Lawdle</h1>
         <br>
         <section id="main-content">
             <div class="thought" id="law" aria-label="The law to guess the location of.">Loading...</div>
@@ -54,13 +54,13 @@
     </main>
     <nav class="fixed-ui" id="navigation">
         <button id="surrender" aria-label="surrender"></button>
-        <a id="mode" class="round-btn" href="/guess.html" aria-label="Change game mode to practice">PRACTICE</a>
+        <a id="mode" class="round-btn" href="guess.html" aria-label="Change game mode to practice">PRACTICE</a>
         <a href="#main-content" class="skip">Skip back to main content</a>
     </nav>
 
     <script type="module">
-        import { sharerbox } from "/sharerbox/sharerbox.js"
-        import { calcDaysSince, getRealLaw, getDistance, getCoordinate, isLocation, removeNonAlpabetical, replaceAt } from "/laws.js"
+        import { sharerbox } from "./sharerbox/sharerbox.js"
+        import { calcDaysSince, getRealLaw, getDistance, getCoordinate, isLocation, removeNonAlpabetical, replaceAt } from "./laws.js"
 
         const map = L.map('map').setView([30, 0], 1);
         try {

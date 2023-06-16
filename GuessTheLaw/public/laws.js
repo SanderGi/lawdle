@@ -55,7 +55,7 @@ export function getDistance(lat1, lon1, lat2, lon2) {
 
 /// fetches a specific real law from the stupidlaws.txt file
 export async function getRealLaw(id) {
-    const response = await fetch('/stupidlaws.txt');
+    const response = await fetch('stupidlaws.txt');
     const text = await response.text();
     const lines = text.split('\n');
     const ix = (3 * id) % lines.length;
@@ -68,7 +68,7 @@ export async function getRealLaw(id) {
 
 /// fetches a random real law from the stupidlaws.txt file
 export async function getRandomLaw() {
-    const response = await fetch('/stupidlaws.txt');
+    const response = await fetch('stupidlaws.txt');
     const text = await response.text();
     const lines = text.split('\n');
     const ix = 3 * Math.floor(lines.length / 3 * Math.random());
@@ -81,13 +81,13 @@ export async function getRandomLaw() {
 
 /// fetches a random fake law from the fakelaws.txt file
 export async function getRandomFakeLaw() {
-    const response = await fetch('/fakelaws.txt');
+    const response = await fetch('fakelaws.txt');
     const text = await response.text();
     const lines = text.split('\n');
     const ix = Math.floor(lines.length * Math.random());
     const law = lines[ix];
 
-    const response2 = await fetch('/stupidlaws.txt');
+    const response2 = await fetch('stupidlaws.txt');
     const text2 = await response2.text();
     const lines2 = text2.split('\n');
     const ix2 = 3 * Math.floor(lines2.length / 3 * Math.random());

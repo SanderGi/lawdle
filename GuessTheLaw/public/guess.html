@@ -8,7 +8,7 @@
     <meta name="description" content="There are many absurd laws in this world. See if you can use your critical thinking skills to identify which laws a human-made and which a made up by an AI">
     <meta name="keywords" content="Stupid laws, lawdle, wordle, word game, geoguesser">
     <meta name="author" content="SanderGi">
-    <link rel="icon" type="image/png" href="/images/icon.png">
+    <link rel="icon" type="image/png" href="./images/icon.png">
 
     <link rel="stylesheet" href="style.css">
 
@@ -22,7 +22,7 @@
         <a href="#main-content" class="skip">Skip to main content</a>
         <a href="#navigation" class="skip">Skip to navigation</a>
         <div>
-            <h1><img src="/images/iconhighres.png" alt="Blue Gavel Icon" width="76.797" height="76.797"> Lawdle</h1>
+            <h1><img src="images/iconhighres.png" alt="Blue Gavel Icon" width="76.797" height="76.797"> Lawdle</h1>
         </div>
         <section class="selectively-centered" id="main-content">
             <label for="mcq-container">
@@ -45,8 +45,8 @@
     <div id="alertContainer" class="skip" role="alert"></div>
 
     <script type="module">
-        import { sharerbox } from "/sharerbox/sharerbox.js"
-        import { getRandomLaw, getRandomFakeLaw } from "/laws.js"
+        import { sharerbox } from "./sharerbox/sharerbox.js"
+        import { getRandomLaw, getRandomFakeLaw } from "./laws.js"
 
         function updateStats(didWin) {
             let stats = JSON.parse(window.localStorage.getItem("practice-stats")) || {
